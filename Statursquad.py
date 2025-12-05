@@ -42,15 +42,15 @@ st.markdown(
         z-index: 99;
     }}
     </style>
-    <img src="data:image/png;base64,{base64.b64encode(open(r'C:\Users\FNAC\OneDrive\Desktop\5th Semester\6 Course Project\Capstone Project\Streamlit_part_Project\mascot.png','rb').read()).decode()}" class="side-img-left">
-    <img src="data:image/png;base64,{base64.b64encode(open(r'C:\Users\FNAC\OneDrive\Desktop\5th Semester\6 Course Project\Capstone Project\Streamlit_part_Project\mascot.png','rb').read()).decode()}" class="side-img-right">
+    <img src="data:image/png;base64,{base64.b64encode(open(r'C:\Users\pc\Documents\GitHub\CapstoneProject\mascot.png','rb').read()).decode()}" class="side-img-left">
+    <img src="data:image/png;base64,{base64.b64encode(open(r'C:\Users\pc\Documents\GitHub\CapstoneProject\mascot.png','rb').read()).decode()}" class="side-img-right">
     """,
     unsafe_allow_html=True
 )
 
 
 # --- Logo at the top-left ---
-logo_path = r"C:\Users\FNAC\OneDrive\Desktop\5th Semester\6 Course Project\Capstone Project\Streamlit_part_Project\logo_sys.png"
+logo_path = r"C:\Users\pc\Documents\GitHub\CapstoneProject\logo_sys.png"
 
 logo_base64 = base64.b64encode(open(logo_path, "rb").read()).decode()
 
