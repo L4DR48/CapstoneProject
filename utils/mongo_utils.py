@@ -11,7 +11,7 @@ load_dotenv()  # make sure your .env is in the root folder
 MONGO_URI = os.getenv("MONGO_URI")
 MONGO_DB = os.getenv("MONGO_DB")
 MONGO_COLLECTION = os.getenv("MONGO_COLLECTION")
-
+s
 if not all([MONGO_URI, MONGO_DB, MONGO_COLLECTION]):
     raise ValueError("Please set MONGO_URI, MONGO_DB, and MONGO_COLLECTION in your .env file")
 
