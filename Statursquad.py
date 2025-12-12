@@ -72,13 +72,16 @@ st.sidebar.image(r'C:\Users\FNAC\OneDrive\Documents\GitHub\CapstoneProject\image
 
 
 if "page" not in st.session_state:
-    st.session_state.page = "Statstics"
+    st.session_state.page = "Conversations"
 
 if st.sidebar.button("Statstics"):
     st.session_state.page = "Statstics"
 
 if st.sidebar.button("Comparison"):
     st.session_state.page = "Comparison"
+
+if st.sidebar.button("Conversations"):
+    st.session_state.page = "Conversations"
 
 page = st.session_state.page
 
@@ -118,9 +121,9 @@ if page == "Statstics":
 
     st.markdown(
         f"""
-        <div style="display: flex; align-items: left;">
+        <div style="display: flex; align-items: center;">
             <img src="data:image/png;base64,{logo_base64}" 
-                style="height:80px; margin-right: 15px;">
+                style="height:150px; margin-right: 40px;">
         </div>
         """,
         unsafe_allow_html=True
@@ -216,9 +219,9 @@ elif page == "Comparison":
 
     st.markdown(
         f"""
-        <div style="display: flex; align-items: left;">
+        <div style="display: flex; align-items: center;">
             <img src="data:image/png;base64,{logo_base64}" 
-                style="height:80px; margin-right: 15px;">
+                style="height:150px; margin-right: 40px;">
         </div>
         """,
         unsafe_allow_html=True
@@ -235,5 +238,66 @@ elif page == "Comparison":
             st.error("Please enter both player names.")
         else:
             st.success(f"Comparing {player1} vs {player2}...")
+
+    floating_stickers()
+
+
+elif page == "Conversations":
+    st.markdown(
+    f"""
+    <style>
+    /* Base positioning (sidebar closed) */
+    .side-img{{
+        position: fixed;
+        top: 25%;
+        left: 120px;  /* moved from 8% to fixed px so sidebar push is predictable */
+        width: 360px;
+        opacity: 0.9;
+        z-index: 99;
+        
+    }}
+
+    /* When sidebar expands — Streamlit adds aria-expanded="true" */
+    [data-testid="stSidebar"][aria-expanded="true"] ~ div .side-img {{
+        left: 255px;  /* shift the image to the right to avoid overlap */
+    }}
+    </style>
+
+    <img src="data:image/png;base64,{base64.b64encode(open(r'C:\Users\FNAC\OneDrive\Documents\GitHub\CapstoneProject\images\mascot.png','rb').read()).decode()}" class="side-img">
+    """,
+    unsafe_allow_html=True
+)
+
+
+
+    # --- Logo at the top-left ---
+    logo_path = r"C:\Users\FNAC\OneDrive\Documents\GitHub\CapstoneProject\images\logo_sys.png"
+
+    logo_base64 = base64.b64encode(open(logo_path, "rb").read()).decode()
+
+    st.markdown(
+        f"""
+        <div style="display: flex; align-items: center;">
+            <img src="data:image/png;base64,{logo_base64}" 
+                style="height:150px; margin-right: 40px;">
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    st.markdown("### 💬 STATYOURSQUAD")
+
+    # Search-style input bar
+    user_input = st.text_input(
+        " ",                         # hides label
+        placeholder="Enter your prompt here...",  
+        key="prompt_input"
+    )
+
+    if st.button(" SEND🏀"):
+        if not user_input.strip():
+            st.error("Please enter a prompt.")
+        else:
+            st.success(f"You asked: {user_input}")
 
     floating_stickers()
