@@ -2,6 +2,10 @@ from google.genai import types
 from pathlib import Path
 import json
 
+cols=["Number","Player", "MIN", "PTS",
+    "FGM", "FGA", "FG%", "3PM", "3PA", "3P%", "2PM", "2PA", "2P%", "FTM", "FTA", "FT%",
+    "OREB","DREB", "REB" ,"AST", "TOV" ,"STL", "BLK", "SR" ,"PF","PFD","PIR", "EFF","+-"]
+
 
 class BoxScoreMaker:
     def __init__(self, client, model:str):
@@ -47,7 +51,7 @@ class BoxScoreMaker:
         return response.text
     
 
-    def table_extractor(self, data, columns:list):
+    def table_extractor(self, data, columns=cols):
         """Extract tabular data with specified columns"""
         
         prompt = f"""Extract tabular data from this text.
@@ -59,6 +63,7 @@ class BoxScoreMaker:
 
         Output as JSON array where each object has these keys: {columns}
         If a value is not found, use null.
+        Use your basketball knowledge to implement this
 
         JSON Output:
         DO NOT USE ANY JSON MARKDOWN"""
@@ -70,7 +75,7 @@ class BoxScoreMaker:
         return response.text
 
 
-    def boxscore(self, path:str, columns: list, game_date:str, home_game:bool, game_opponent:str, outfile_path:str):
+    def boxscore(self, path:str, game_date:str, home_game:bool, game_opponent:str, outfile_path:str, columns= cols):
         text = self.OCR(path)
         box = self.table_extractor(text, columns)
 
