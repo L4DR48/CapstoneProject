@@ -103,31 +103,13 @@ if page == "Statstics":
         left: 255px;  /* shift the image to the right to avoid overlap */
     }}
     </style>
-<<<<<<< HEAD
-<<<<<<< HEAD
 
     <img src="data:image/png;base64,{base64.b64encode(open(r'C:\Users\FNAC\OneDrive\Documents\GitHub\CapstoneProject\images\mascot.png','rb').read()).decode()}" class="side-img">
-=======
-    <img src="data:image/png;base64,{base64.b64encode(open(r'C:\Users\pc\Documents\GitHub\CapstoneProject\mascot.png','rb').read()).decode()}" class="side-img-left">
-    <img src="data:image/png;base64,{base64.b64encode(open(r'C:\Users\pc\Documents\GitHub\CapstoneProject\mascot.png','rb').read()).decode()}" class="side-img-right">
->>>>>>> 0769030b747da3b5231cd6a37221c3de630749af
-=======
-    <img src="data:image/png;base64,{base64.b64encode(open(r'C:\Users\pc\Documents\GitHub\CapstoneProject\mascot.png','rb').read()).decode()}" class="side-img-left">
-    <img src="data:image/png;base64,{base64.b64encode(open(r'C:\Users\pc\Documents\GitHub\CapstoneProject\mascot.png','rb').read()).decode()}" class="side-img-right">
->>>>>>> 0769030b747da3b5231cd6a37221c3de630749af
     """,
     unsafe_allow_html=True
 )
 
 
-<<<<<<< HEAD
-=======
-# --- Logo at the top-left ---
-logo_path = r"C:\Users\pc\Documents\GitHub\CapstoneProject\logo_sys.png"
-<<<<<<< HEAD
->>>>>>> 0769030b747da3b5231cd6a37221c3de630749af
-=======
->>>>>>> 0769030b747da3b5231cd6a37221c3de630749af
 
     # --- Logo at the top-left ---
     logo_path = r"C:\Users\FNAC\OneDrive\Documents\GitHub\CapstoneProject\images\logo_sys.png"
