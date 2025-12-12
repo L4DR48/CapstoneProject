@@ -49,3 +49,4 @@ def get_documents_from_mongo(filter_query: dict):
     
     return results
 
+
