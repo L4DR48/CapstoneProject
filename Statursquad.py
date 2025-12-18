@@ -2,6 +2,19 @@ import streamlit as st
 from typing import List, Dict
 import time
 import base64
+from pathlib import Path
+
+
+# ---------- Project Paths ----------
+BASE_DIR = Path(__file__).resolve().parent
+IMAGES_DIR = BASE_DIR / "images"
+
+def img_to_base64(filename: str) -> str:
+    """Load image from images/ and return base64 string."""
+    path = IMAGES_DIR / filename
+    with open(path, "rb") as f:
+        return base64.b64encode(f.read()).decode()
+
 
 # ---------- Simulated Gemini Service ----------
 def fetch_info(query: str, search_type: str) -> Dict[str, any]:
@@ -19,22 +32,15 @@ def fetch_info(query: str, search_type: str) -> Dict[str, any]:
 
 
 def floating_stickers():
-    # ---- 4 sticker image paths ----
-    sticker_paths = [
-        r"C:\Users\FNAC\OneDrive\Documents\GitHub\CapstoneProject\images\nba.png",
-        r"C:\Users\FNAC\OneDrive\Documents\GitHub\CapstoneProject\images\basketballworldcup.png",
-        r"C:\Users\FNAC\OneDrive\Documents\GitHub\CapstoneProject\images\nba2k.png",
-        r"C:\Users\FNAC\OneDrive\Documents\GitHub\CapstoneProject\images\wearebasket.png",
-
+    sticker_files = [
+        "nba.png",
+        "basketballworldcup.png",
+        "nba2k.png",
+        "wearebasket.png",
     ]
 
-    # ---- Convert all images to Base64 ----
-    encoded_imgs = []
-    for path in sticker_paths:
-        with open(path, "rb") as f:
-            encoded_imgs.append(base64.b64encode(f.read()).decode())
+    encoded_imgs = [img_to_base64(name) for name in sticker_files]
 
-    # ---- Inject HTML/CSS ----
     st.markdown(
         f"""
         <style>
@@ -42,16 +48,13 @@ def floating_stickers():
             position: fixed;
             width: 150px;
             opacity: 0.85;
-            
             z-index: 1;
         }}
 
-        /* ---- Sticker positions ---- */
         .sticker-1 {{ top: 14%; right: 8%; transform: rotate(-4deg); }}
         .sticker-2 {{ top: 53%; right: 8%; transform: rotate(3deg); }}
         .sticker-3 {{ top: 33%; right: 8%; transform: rotate(5deg); }}
         .sticker-4 {{ top: 83%; right: 6%; transform: rotate(5deg); }}
-
         </style>
 
         <img src="data:image/png;base64,{encoded_imgs[0]}" class="floating-sticker sticker-1" />
@@ -63,12 +66,14 @@ def floating_stickers():
     )
 
 
+
 # ---------- Streamlit App ----------
 st.set_page_config(page_title="STATYOURSQUAD", page_icon="🏀", layout="centered")
 
 
 # --- Sidebar Navigation ---
-st.sidebar.image(r'C:\Users\FNAC\OneDrive\Documents\GitHub\CapstoneProject\images\logo_sys.png', use_container_width=False)
+st.sidebar.image(IMAGES_DIR / "logo_sys.png")
+
 
 
 if "page" not in st.session_state:
@@ -107,7 +112,8 @@ if page == "Statstics":
     }}
     </style>
 
-    <img src="data:image/png;base64,{base64.b64encode(open(r'C:\Users\FNAC\OneDrive\Documents\GitHub\CapstoneProject\images\mascot.png','rb').read()).decode()}" class="side-img">
+    <img src="data:image/png;base64,{img_to_base64('mascot.png')}" class="side-img">
+
     """,
     unsafe_allow_html=True
 )
@@ -115,9 +121,7 @@ if page == "Statstics":
 
 
     # --- Logo at the top-left ---
-    logo_path = r"C:\Users\FNAC\OneDrive\Documents\GitHub\CapstoneProject\images\logo_sys.png"
-
-    logo_base64 = base64.b64encode(open(logo_path, "rb").read()).decode()
+    logo_base64 = img_to_base64("logo_sys.png")
 
     st.markdown(
         f"""
@@ -159,7 +163,7 @@ if page == "Statstics":
         else:
             with st.spinner("Fetching information..."):
                 try:
-                    result = fetch_info(query, search_type)
+                    result = fetch_info(query, search_type="general")
                     st.success("Results fetched successfully!")
                     
                     # Display Result
@@ -208,14 +212,13 @@ elif page == "Comparison":
     }}
     </style>
 
-    <img src="data:image/png;base64,{base64.b64encode(open(r'C:\Users\FNAC\OneDrive\Documents\GitHub\CapstoneProject\images\mascot.png','rb').read()).decode()}" class="side-img">
+    <img src="data:image/png;base64,{img_to_base64('mascot.png')}" class="side-img">
+
     """,
     unsafe_allow_html=True
 )
     # --- Logo at the top-left ---
-    logo_path = r"C:\Users\FNAC\OneDrive\Documents\GitHub\CapstoneProject\images\logo_sys.png"
-
-    logo_base64 = base64.b64encode(open(logo_path, "rb").read()).decode()
+    logo_base64 = img_to_base64("logo_sys.png")
 
     st.markdown(
         f"""
@@ -263,7 +266,8 @@ elif page == "Conversations":
     }}
     </style>
 
-    <img src="data:image/png;base64,{base64.b64encode(open(r'C:\Users\FNAC\OneDrive\Documents\GitHub\CapstoneProject\images\mascot.png','rb').read()).decode()}" class="side-img">
+    <img src="data:image/png;base64,{img_to_base64('mascot.png')}" class="side-img">
+
     """,
     unsafe_allow_html=True
 )
@@ -271,9 +275,7 @@ elif page == "Conversations":
 
 
     # --- Logo at the top-left ---
-    logo_path = r"C:\Users\FNAC\OneDrive\Documents\GitHub\CapstoneProject\images\logo_sys.png"
-
-    logo_base64 = base64.b64encode(open(logo_path, "rb").read()).decode()
+    logo_base64 = img_to_base64("logo_sys.png")
 
     st.markdown(
         f"""
@@ -301,3 +303,4 @@ elif page == "Conversations":
             st.success(f"You asked: {user_input}")
 
     floating_stickers()
+
