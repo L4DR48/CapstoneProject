@@ -1,9 +1,18 @@
 import streamlit as st
-from typing import List, Dict
-import time
-import base64
 from pathlib import Path
+import base64
+import os
+from dotenv import load_dotenv
+from google import genai
 
+# ---------- Load environment variables ----------
+load_dotenv()
+
+# ---------- Gemini Client Initialization ----------
+if "gemini_client" not in st.session_state:
+    st.session_state.gemini_client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
+
+MODEL = "gemini-2.5-flash-lite"
 
 # ---------- Project Paths ----------
 BASE_DIR = Path(__file__).resolve().parent
@@ -15,30 +24,14 @@ def img_to_base64(filename: str) -> str:
     with open(path, "rb") as f:
         return base64.b64encode(f.read()).decode()
 
-
-# ---------- Simulated Gemini Service ----------
-def fetch_info(query: str, search_type: str) -> Dict[str, any]:
-    """
-    Simulates fetching sports information like the Gemini service.
-    Replace this with a real API call later if needed.
-    """
-    time.sleep(2)  # simulate API delay
-    
-    # Dummy data
-    data = {
-        "text": f"Here’s some detailed information about '{query}' ({search_type})."
-    }
-    return data
-
-
 def floating_stickers():
+    """Floating stickers for all pages."""
     sticker_files = [
         "nba.png",
         "basketballworldcup.png",
         "nba2k.png",
         "wearebasket.png",
     ]
-
     encoded_imgs = [img_to_base64(name) for name in sticker_files]
 
     st.markdown(
@@ -50,7 +43,6 @@ def floating_stickers():
             opacity: 0.85;
             z-index: 1;
         }}
-
         .sticker-1 {{ top: 14%; right: 8%; transform: rotate(-4deg); }}
         .sticker-2 {{ top: 53%; right: 8%; transform: rotate(3deg); }}
         .sticker-3 {{ top: 33%; right: 8%; transform: rotate(5deg); }}
@@ -65,75 +57,75 @@ def floating_stickers():
         unsafe_allow_html=True
     )
 
-
-
 # ---------- Streamlit App ----------
 st.set_page_config(page_title="STATYOURSQUAD", page_icon="🏀", layout="centered")
 
-
-# --- Sidebar Navigation ---
+# Sidebar logo
 st.sidebar.image(IMAGES_DIR / "logo_sys.png")
 
-
-
+# --- Sidebar Navigation ---
 if "page" not in st.session_state:
     st.session_state.page = "Conversations"
 
 if st.sidebar.button("Statstics"):
     st.session_state.page = "Statstics"
-
 if st.sidebar.button("Comparison"):
     st.session_state.page = "Comparison"
-
 if st.sidebar.button("Conversations"):
     st.session_state.page = "Conversations"
 
 page = st.session_state.page
 
+# --- Initialize Gemini Chat for Conversation page ---
+if "gemini_chat" not in st.session_state:
+    st.session_state.gemini_chat = st.session_state.gemini_client.chats.create(
+        model=MODEL,
+        config={
+            "temperature": 0.7,
+            "system_instruction": "You are a helpful assistant."
+        }
+    )
 
-if page == "Statstics":
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+
+# --- Page Header Helper ---
+def show_header():
+    # Mascot side image
     st.markdown(
-    f"""
-    <style>
-    /* Base positioning (sidebar closed) */
-    .side-img{{
-        position: fixed;
-        top: 25%;
-        left: 120px;  /* moved from 8% to fixed px so sidebar push is predictable */
-        width: 360px;
-        opacity: 0.9;
-        z-index: 99;
-        
-    }}
+        f"""
+        <style>
+        .side-img {{
+            position: fixed;
+            top: 25%;
+            left: 120px;
+            width: 360px;
+            opacity: 0.9;
+            z-index: 99;
+        }}
+        [data-testid="stSidebar"][aria-expanded="true"] ~ div .side-img {{
+            left: 255px;
+        }}
+        </style>
+        <img src="data:image/png;base64,{img_to_base64('mascot.png')}" class="side-img">
+        """,
+        unsafe_allow_html=True
+    )
 
-    /* When sidebar expands — Streamlit adds aria-expanded="true" */
-    [data-testid="stSidebar"][aria-expanded="true"] ~ div .side-img {{
-        left: 255px;  /* shift the image to the right to avoid overlap */
-    }}
-    </style>
-
-    <img src="data:image/png;base64,{img_to_base64('mascot.png')}" class="side-img">
-
-    """,
-    unsafe_allow_html=True
-)
-
-
-
-    # --- Logo at the top-left ---
+    # Logo top-left
     logo_base64 = img_to_base64("logo_sys.png")
-
     st.markdown(
         f"""
         <div style="display: flex; align-items: center;">
-            <img src="data:image/png;base64,{logo_base64}" 
-                style="height:150px; margin-right: 40px;">
+            <img src="data:image/png;base64,{logo_base64}" style="height:150px; margin-right: 40px;">
         </div>
         """,
         unsafe_allow_html=True
     )
 
-    # --- Title and Description ---
+# --- STATISTICS PAGE ---
+if page == "Statstics":
+    show_header()
     st.markdown(
         """
         <h1 style='text-align: left; 
@@ -150,157 +142,79 @@ if page == "Statstics":
         unsafe_allow_html=True,
     )
 
+    with st.form("stats_form"):
+        query = st.text_input("Enter a team or player name for stats:")
+        submitted = st.form_submit_button("Get Stats 🏀")
 
-    # --- Search Form ---
-    with st.form("search_form"):
-        query = st.text_input("Enter a team or player name:")
-        submitted = st.form_submit_button("Search 🏀")
-
-    # --- Results Area ---
     if submitted:
         if not query.strip():
             st.error("Please enter a search query.")
         else:
-            with st.spinner("Fetching information..."):
+            with st.spinner("Fetching statistics..."):
                 try:
-                    result = fetch_info(query, search_type="general")
+                    # Send prompt to Gemini
+                    prompt = f"Provide detailed basketball statistics about {query}."
+                    response = st.session_state.gemini_chat.send_message(prompt)
                     st.success("Results fetched successfully!")
-                    
-                    # Display Result
                     st.markdown("### 🏆 Result")
-                    st.write(result["text"])
-
-                    # Display Sources
-                    st.markdown("### 📚 Sources")
-                    st.write("You will get your answers soon enough, boy.")
+                    st.write(response.text)
                 except Exception as e:
-                    st.error(f"An error occurred: {str(e)}")
-
-    # --- Footer ---
-    st.markdown(
-        """
-        <hr style='margin-bottom: 2rem; bottom: 1rem;' />
-        <p style='text-align: center; color: gray; font-size: 0.9rem;'>
-            Powered by  Sunshine Group
-        </p>
-        """,
-        unsafe_allow_html=True,
-    )
+                    st.error(f"Error fetching stats: {e}")
 
     floating_stickers()
 
-
+# --- COMPARISON PAGE ---
 elif page == "Comparison":
-
-    st.markdown(
-    f"""
-    <style>
-    /* Base positioning (sidebar closed) */
-    .side-img{{
-        position: fixed;
-        top: 25%;
-        left: 120px;  /* moved from 8% to fixed px so sidebar push is predictable */
-        width: 360px;
-        opacity: 0.9;
-        z-index: 99;
-        
-    }}
-
-    /* When sidebar expands — Streamlit adds aria-expanded="true" */
-    [data-testid="stSidebar"][aria-expanded="true"] ~ div .side-img {{
-        left: 255px;  /* shift the image to the right to avoid overlap */
-    }}
-    </style>
-
-    <img src="data:image/png;base64,{img_to_base64('mascot.png')}" class="side-img">
-
-    """,
-    unsafe_allow_html=True
-)
-    # --- Logo at the top-left ---
-    logo_base64 = img_to_base64("logo_sys.png")
-
-    st.markdown(
-        f"""
-        <div style="display: flex; align-items: center;">
-            <img src="data:image/png;base64,{logo_base64}" 
-                style="height:150px; margin-right: 40px;">
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+    show_header()
     st.title("Player Comparison🏀")
 
     player1 = st.text_input("Player 1")
     player2 = st.text_input("Player 2")
-
     compare_btn = st.button("Compare 🏀")
 
     if compare_btn:
         if not player1 or not player2:
             st.error("Please enter both player names.")
         else:
-            st.success(f"Comparing {player1} vs {player2}...")
+            with st.spinner(f"Comparing {player1} vs {player2}..."):
+                try:
+                    # Gemini prompt for comparison
+                    prompt = f"Compare the basketball performance of {player1} and {player2} in detail."
+                    response = st.session_state.gemini_chat.send_message(prompt)
+                    st.success("Comparison complete!")
+                    st.markdown(f"### 🏀 Comparison: {player1} vs {player2}")
+                    st.write(response.text)
+                except Exception as e:
+                    st.error(f"Error comparing players: {e}")
 
     floating_stickers()
 
-
+# --- CONVERSATIONS PAGE ---
 elif page == "Conversations":
-    st.markdown(
-    f"""
-    <style>
-    /* Base positioning (sidebar closed) */
-    .side-img{{
-        position: fixed;
-        top: 25%;
-        left: 120px;  /* moved from 8% to fixed px so sidebar push is predictable */
-        width: 360px;
-        opacity: 0.9;
-        z-index: 99;
-        
-    }}
-
-    /* When sidebar expands — Streamlit adds aria-expanded="true" */
-    [data-testid="stSidebar"][aria-expanded="true"] ~ div .side-img {{
-        left: 255px;  /* shift the image to the right to avoid overlap */
-    }}
-    </style>
-
-    <img src="data:image/png;base64,{img_to_base64('mascot.png')}" class="side-img">
-
-    """,
-    unsafe_allow_html=True
-)
-
-
-
-    # --- Logo at the top-left ---
-    logo_base64 = img_to_base64("logo_sys.png")
-
-    st.markdown(
-        f"""
-        <div style="display: flex; align-items: center;">
-            <img src="data:image/png;base64,{logo_base64}" 
-                style="height:150px; margin-right: 40px;">
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
+    show_header()
     st.markdown("### 💬 STATYOURSQUAD")
 
-    # Search-style input bar
-    user_input = st.text_input(
-        " ",                         # hides label
-        placeholder="Enter your prompt here...",  
-        key="prompt_input"
-    )
+    # Chat input
+    if user_input := st.chat_input("Ask your question here...", key="chat_input"):
+        with st.chat_message("user"):
+            st.write(user_input)
+        st.session_state.messages.append({"role": "user", "content": user_input})
 
-    if st.button(" SEND🏀"):
-        if not user_input.strip():
-            st.error("Please enter a prompt.")
-        else:
-            st.success(f"You asked: {user_input}")
+        # Gemini response
+        with st.chat_message("assistant"):
+            with st.spinner("Thinking..."):
+                try:
+                    response = st.session_state.gemini_chat.send_message(user_input)
+                    st.write(response.text)
+                    st.session_state.messages.append({"role": "assistant", "content": response.text})
+                except Exception as e:
+                    st.error(f"Error: {e}")
+
+    # Display previous messages
+    for msg in st.session_state.messages:
+        avatar = "👤" if msg["role"] == "user" else "🤖"
+        with st.chat_message(msg["role"], avatar=avatar):
+            st.write(msg["content"])
 
     floating_stickers()
 
