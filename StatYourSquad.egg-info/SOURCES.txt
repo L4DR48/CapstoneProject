@@ -1,0 +1,7 @@
+README.md
+pyproject.toml
+StatYourSquad.egg-info/PKG-INFO
+StatYourSquad.egg-info/SOURCES.txt
+StatYourSquad.egg-info/dependency_links.txt
+StatYourSquad.egg-info/requires.txt
+StatYourSquad.egg-info/top_level.txt
