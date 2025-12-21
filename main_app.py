@@ -6,6 +6,7 @@ import base64
 import os
 from dotenv import load_dotenv
 from google import genai
+<<<<<<< HEAD
 from langfuse import observe, get_client
 from utils.langfuse_utils import init_tracing
 from utils.mongo_utils import init_mongo
@@ -18,6 +19,12 @@ if "mongo_collection" not in st.session_state:
     st.session_state.mongo_collection = init_mongo()
 
 collection = st.session_state.mongo_collection
+=======
+
+# ---------- Load environment variables ----------
+load_dotenv()
+
+>>>>>>> 16ea7f0339ff38fdcfa48a9555616ed59d25d6f3
 # ---------- Database Functions ----------
 def create_usertable():
     conn = sqlite3.connect('users.db', check_same_thread=False)
@@ -206,4 +213,8 @@ else:
         for msg in st.session_state.messages:
             with st.chat_message(msg["role"]):
                 st.write(msg["content"])
+<<<<<<< HEAD
         floating_stickers()
+=======
+        floating_stickers()
+>>>>>>> 16ea7f0339ff38fdcfa48a9555616ed59d25d6f3

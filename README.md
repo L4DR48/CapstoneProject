@@ -12,6 +12,11 @@ Project Description and Concerns
 Our app will use RAG, in order to connect the statistics database with our LLM. Furthermore, the app will have a dashboard with graphics for the visualization of statistics. In addition, a conversational interface will provide advice regarding the performance in games, practice plans, and squad management, among other options.
 
 Finally, text generation will be used to transform the data into performance reports for games and player analysis. As Gemini supports multilingual input, the app will be available in several languages. 
+<<<<<<< HEAD
 
 There are some concerns, namely regarding AI hallucinating and misclassification of the statistics, but that will be dealt with accordingly. 
+=======
+There are some concerns, namely regarding AI hallucinating and misclassification of the statistics, but that will be dealt with accordingly.
+
+>>>>>>> 16ea7f0339ff38fdcfa48a9555616ed59d25d6f3
 
