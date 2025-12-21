@@ -1,7 +1,8 @@
 from datetime import datetime
 from utils.mongo_utils import collection, db, client
+from langfuse import observe
 
-
+@observe()
 def save_document(doc: dict) -> str:
     """
     Inserts a JSON-like document into MongoDB.
