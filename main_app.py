@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 from google import genai
 
 # Langfuse
-from langfuse.decorators import observe
+from langfuse import observe
 from langfuse import Langfuse
 
 from utils.langfuse_utils import init_tracing
