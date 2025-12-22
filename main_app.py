@@ -15,7 +15,6 @@ from utils.mongo_utils import init_mongo, store_boxscore
 # ---------- Load environment variables ----------
 load_dotenv()
 
-
 # ---------- Database Functions ----------
 def create_usertable():
     conn = sqlite3.connect('users.db', check_same_thread=False)
@@ -70,10 +69,7 @@ def img_to_base64(filename: str) -> str:
         return base64.b64encode(f.read()).decode()
     
 def show_header(hide_bg=False):
-    # Set opacity based on search state
     opacity = "0" if hide_bg else "1"
-    
-    # Use court.png - Ensure this file is in your /images folder!
     try:
         bg_data = img_to_base64('court.png')
         logo_data = img_to_base64('logo_sys.png')
@@ -84,15 +80,10 @@ def show_header(hide_bg=False):
     st.markdown(
         f"""
         <style>
-        /* 1. THE BACKGROUND FIX */
-        [data-testid="stAppViewContainer"] {{
-            background-color: #0E1117; /* Fallback color */
-        }}
-
+        [data-testid="stAppViewContainer"] {{ background-color: #0E1117; }}
         [data-testid="stAppViewContainer"]::before {{
             content: "";
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background-image: url("data:image/png;base64,{bg_data}");
             background-size: cover;
             background-position: center;
@@ -101,39 +92,24 @@ def show_header(hide_bg=False):
             transition: opacity 0.8s ease-in-out;
             z-index: 0;
         }}
-
-        /* 2. FORCE TRANSPARENCY */
-        /* This removes the default white/dark gray layers */
-        [data-testid="stHeader"], 
-        [data-testid="stApp"], 
-        [data-testid="stToolbar"] {{
+        [data-testid="stHeader"], [data-testid="stApp"], [data-testid="stToolbar"] {{
             background: rgba(0,0,0,0) !important;
         }}
-
-        /* 3. CENTERED BOX CONTENT */
         .main .block-container {{
-            background-color: rgba(0, 0, 0, 0.75); 
+            background-color: rgba(0, 0, 0, 0.75);
             border-radius: 25px;
             padding: 50px;
-            margin-top: 15vh; /* Pushes the box to the middle */
+            margin-top: 15vh;
             z-index: 1;
-            text-align: center; /* Centers all text inside the box */
+            text-align: center;
             box-shadow: 0px 10px 30px rgba(0,0,0,0.5);
         }}
-
-        /* Center the input labels and buttons */
-        .stTextInput, .stButton {{
-            text-align: left; /* Keeps input text readable but box remains centered */
-        }}
-        
-        h1, p {{
-            text-align: center !important;
-        }}
+        .stTextInput, .stButton {{ text-align: left; }}
+        h1, p {{ text-align: center !important; }}
         </style>
         """,
         unsafe_allow_html=True
     )
-    # Logo
     logo_base64 = img_to_base64("logo_sys.png")
     st.markdown(
         f"""
@@ -264,9 +240,9 @@ else:
         show_header(hide_bg=st.session_state.show_results)
         st.markdown("<style>div[data-testid='stPopover'] { position: fixed; bottom: 31px; left: calc(50% - 335px); z-index: 999999; } div[data-testid='stPopover'] button { background: transparent !important; border: none !important; font-size: 20px !important; color: #808080 !important; } [data-testid='stChatInput'] textarea { padding-left: 50px !important; }</style>", unsafe_allow_html=True)
         
-#        with st.popover("ADD FILES➕"):
-#            st.file_uploader("Images", type=["png", "jpg", "jpeg"], key="c_img")
-#            st.file_uploader("Documents", type=["pdf"], key="c_doc")
+        with st.popover("ADD FILES➕"):
+            st.file_uploader("Images", type=["png", "jpg", "jpeg"], key="c_img")
+            st.file_uploader("Documents", type=["pdf"], key="c_doc")
 
         uploaded = st.file_uploader(
             "Upload boxscore",
