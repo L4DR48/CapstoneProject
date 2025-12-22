@@ -253,7 +253,7 @@ class BoxScoreMaker:
         """
         Send image/pdf uploaded via Streamlit directly to Gemini.
         Returns raw JSON text.
-        """
+        """ 
 
         ex_json = {
             #"Team_Name": "ex_team",
