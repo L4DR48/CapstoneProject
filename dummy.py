@@ -9,31 +9,13 @@ from google import genai
 import pandas as pd
 from tools.boxscore2_0 import BoxScoreMaker
 from tools.boxscore_analysis import BoxScoreAnalysis 
-from utils.mongo_utils import init_mongo, store_boxscore
+from utils.mongo_utils import store_boxscore
+from tools.mongo_tools import get_team_boxscores,extract_players_from_games
+
 
 
 # ---------- Load environment variables ----------
 load_dotenv()
-
-def get_team_boxscores_from_mongo(team_name: str):
-    collection = init_mongo()
-    docs = list(collection.find({"team_name": team_name}))
-    return docs
-
-def extract_players_from_mongo_games(mongo_docs):
-    players = set()
-
-    for game in mongo_docs:
-        boxscore = game.get("boxscore", {})
-        team_data = next(iter(boxscore.values()), {})
-        for p in team_data.get("Players", []):
-            name = p.get("Player")
-            if name:
-                players.add(name)
-
-    return sorted(players)
-
-
 # ---------- Database Functions ----------
 def create_usertable():
     conn = sqlite3.connect('users.db', check_same_thread=False)
@@ -244,13 +226,13 @@ else:
         team_query = st.text_input("Enter Team Name:", key="team_input")
 
         if team_query:
-            mongo_docs = get_team_boxscores_from_mongo(team_query)
+            mongo_docs = get_team_boxscores(team_query)
 
             # -------------------------------
             # CASE 1: TEAM EXISTS IN MONGODB
             # -------------------------------
             if mongo_docs:
-                players = extract_players_from_mongo_games(mongo_docs)
+                players = extract_players_from_games(mongo_docs)
 
                 st.session_state.current_roster = ["Entire Team"] + players
                 st.session_state.mongo_team_data = mongo_docs
@@ -349,13 +331,13 @@ else:
                         
                         # Step B: Fetch the second roster if it's a different team
                         if compare_team_query:
-                            mongo_compare_docs = get_team_boxscores_from_mongo(compare_team_query)
+                            mongo_compare_docs = get_team_boxscores(compare_team_query)
 
                             # -------------------------------
                             # CASE 1: COMPARISON TEAM IN MONGODB
                             # -------------------------------
                             if mongo_compare_docs:
-                                compare_players = extract_players_from_mongo_games(mongo_compare_docs)
+                                compare_players = extract_players_from_games(mongo_compare_docs)
 
                                 st.session_state.compare_roster = compare_players
                                 st.session_state.last_compare_team = compare_team_query
@@ -400,7 +382,7 @@ else:
 
                                 Available data:
                                 Team A games: {st.session_state.get("mongo_team_data")}
-                                Team B games: {get_team_boxscores_from_mongo(compare_team_query)}
+                                Team B games: {get_team_boxscores(compare_team_query)}
                                 """
 
                             comparison_response = st.session_state.gemini_chat.send_message(comparison_prompt)
