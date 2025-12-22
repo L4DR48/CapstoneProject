@@ -1,8 +1,10 @@
 from google.genai import types
 import json
+from langfuse import observe
 
 
 class PracticeGen:
+   @observe()
    def __init__(self, client, model:str):
       self.client=client
       self.model=model

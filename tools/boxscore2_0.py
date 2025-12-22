@@ -2,19 +2,21 @@ from google.genai import types
 from pathlib import Path
 import json
 import re
+from langfuse import observe
 
-
+@observe()
 def clean_json(text):
     text = re.sub(r"^```json\s*|\s*```$", "", text)
     return text
 
 
 class BoxScoreMaker:
+    @observe()
     def __init__(self, client, model:str):
         self.client=client
         self.model=model
-    
 
+    @observe()
     def get_stats(self, path):
         """
         Send image/pdf of boxscore directly to Gemini. Returns the stats as JSON.
@@ -239,7 +241,7 @@ class BoxScoreMaker:
         
         return clean_json(response.text)
     
-
+    @observe()
     def boxscore(self, path:str, team:str, outfile_path:str):
         box = self.get_stats(path)
 
@@ -248,7 +250,7 @@ class BoxScoreMaker:
         with open(outfile_path, "w") as outfile:    
             json.dump(output, outfile)
             
-
+    @observe()
     def get_stats_from_upload(self, file_bytes: bytes, mime_type: str):
         """
         Send image/pdf uploaded via Streamlit directly to Gemini.
@@ -323,7 +325,7 @@ If data is missing, use null.
             raise ValueError("Gemini returned empty response")
 
         return clean_json(response.text)
-
+    @observe()
     def boxscore_from_upload(self, uploaded_file, team: str):
         """
         Streamlit-friendly wrapper

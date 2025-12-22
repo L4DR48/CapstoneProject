@@ -1,6 +1,8 @@
 from utils.mongo_utils import init_mongo
+from langfuse import observe
 
 
+@observe()
 def get_team_boxscores(team_name: str) -> list[dict]:
     """
     Fetch all stored boxscores for a given team.
@@ -8,7 +10,7 @@ def get_team_boxscores(team_name: str) -> list[dict]:
     collection = init_mongo()
     return list(collection.find({"team_name": team_name}))
 
-
+@observe()
 def extract_players_from_games(mongo_docs: list[dict]) -> list[str]:
     """
     Extract unique player names from stored boxscore documents.
