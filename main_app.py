@@ -47,7 +47,7 @@ MODEL = "gemini-2.5-flash-lite"
 BASE_DIR = Path(__file__).resolve().parent
 IMAGES_DIR = BASE_DIR / "images"
 
-# ---------- Helper Functions (Your Original Code) ----------
+# ---------- Helper Functions ----------
 def img_to_base64(filename: str) -> str:
     path = IMAGES_DIR / filename
     with open(path, "rb") as f:

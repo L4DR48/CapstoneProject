@@ -8,6 +8,7 @@ from google import genai
 # ---------- Load environment variables ----------
 load_dotenv()
 
+
 # ---------- Gemini Client Initialization ----------
 if "gemini_client" not in st.session_state:
     st.session_state.gemini_client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
@@ -24,38 +25,6 @@ def img_to_base64(filename: str) -> str:
     with open(path, "rb") as f:
         return base64.b64encode(f.read()).decode()
 
-def floating_stickers():
-    """Floating stickers for all pages."""
-    sticker_files = [
-        "nba.png",
-        "basketballworldcup.png",
-        "nba2k.png",
-        "wearebasket.png",
-    ]
-    encoded_imgs = [img_to_base64(name) for name in sticker_files]
-
-    st.markdown(
-        f"""
-        <style>
-        .floating-sticker {{
-            position: fixed;
-            width: 150px;
-            opacity: 0.85;
-            z-index: 1;
-        }}
-        .sticker-1 {{ top: 14%; right: 8%; transform: rotate(-4deg); }}
-        .sticker-2 {{ top: 53%; right: 8%; transform: rotate(3deg); }}
-        .sticker-3 {{ top: 33%; right: 8%; transform: rotate(5deg); }}
-        .sticker-4 {{ top: 83%; right: 6%; transform: rotate(5deg); }}
-        </style>
-
-        <img src="data:image/png;base64,{encoded_imgs[0]}" class="floating-sticker sticker-1" />
-        <img src="data:image/png;base64,{encoded_imgs[1]}" class="floating-sticker sticker-2" />
-        <img src="data:image/png;base64,{encoded_imgs[2]}" class="floating-sticker sticker-3" />
-        <img src="data:image/png;base64,{encoded_imgs[3]}" class="floating-sticker sticker-4" />
-        """,
-        unsafe_allow_html=True
-    )
 
 # ---------- Streamlit App ----------
 st.set_page_config(page_title="STATYOURSQUAD", page_icon="🏀", layout="centered")
@@ -93,21 +62,21 @@ if "messages" not in st.session_state:
 def show_header():
     # Mascot side image
     st.markdown(
-        f"""
+       f"""
         <style>
-        .side-img {{
-            position: fixed;
-            top: 25%;
-            left: 120px;
-            width: 360px;
-            opacity: 0.9;
-            z-index: 99;
+        .stApp {{
+            background-image: url("data:image/jpeg;base64,{img_to_base64('court.png')}");
+            background-size: cover;
+            background-position: cover;
+            background-attachment: fixed;
         }}
-        [data-testid="stSidebar"][aria-expanded="true"] ~ div .side-img {{
-            left: 255px;
+        .main .block-container {{
+            background-color: rgba(0, 0, 0, 0.6); /* Black tint with 60% transparency */
+            border-radius: 20px;
+            padding: 40px;
+            margin-top: 20px;
         }}
         </style>
-        <img src="data:image/png;base64,{img_to_base64('mascot.png')}" class="side-img">
         """,
         unsafe_allow_html=True
     )
@@ -128,14 +97,14 @@ if page == "Statstics":
     show_header()
     st.markdown(
         """
-        <h1 style='text-align: left; 
+        <h1 style='text-align: middle; 
                 background: -webkit-linear-gradient(#10b981, #06b6d4);
                 -webkit-background-clip: text;
                 -webkit-text-fill-color: orange;
                 font-size: 3rem;'>
             STATYOURSQUAD
         </h1>
-        <p style='text-align: left; color: white; font-size: 1.1rem;'>
+        <p style='text-align: middle; color: white; font-size: 1.1rem;'>
             Instant insights on your favorite teams and players.
         </p>
         """,
@@ -161,7 +130,7 @@ if page == "Statstics":
                 except Exception as e:
                     st.error(f"Error fetching stats: {e}")
 
-    floating_stickers()
+
 
 # --- COMPARISON PAGE ---
 elif page == "Comparison":
@@ -187,7 +156,6 @@ elif page == "Comparison":
                 except Exception as e:
                     st.error(f"Error comparing players: {e}")
 
-    floating_stickers()
 
 # --- CONVERSATIONS PAGE ---
 elif page == "Conversations":
@@ -216,5 +184,4 @@ elif page == "Conversations":
         with st.chat_message(msg["role"], avatar=avatar):
             st.write(msg["content"])
 
-    floating_stickers()
 
