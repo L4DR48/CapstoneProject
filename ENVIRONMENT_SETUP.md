@@ -63,6 +63,6 @@ The application relies on several external services that require API keys.
         3. Use environment variables in deployment platforms
 
 9. Deployment Notes
-          - When deploying (Streamlit Cloud, Render, etc.):
+          - When deploying (Streamlit Cloud, Render, etc.)   
           - Add environment variables directly in the platform dashboard
           - Do not upload .env files
