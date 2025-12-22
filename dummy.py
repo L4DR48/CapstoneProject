@@ -42,7 +42,7 @@ def login_user(username, password):
     return data
 
 
-MODEL = "gemini-2.5-flash-lite"
+MODEL = "gemini-1.5-flash-lite"
 BASE_DIR = Path(__file__).resolve().parent
 IMAGES_DIR = BASE_DIR / "images"
 
