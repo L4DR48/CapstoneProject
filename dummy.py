@@ -11,11 +11,15 @@ from tools.boxscore2_0 import BoxScoreMaker
 from tools.boxscore_analysis import BoxScoreAnalysis 
 from utils.mongo_utils import store_boxscore
 from tools.mongo_tools import get_team_boxscores,extract_players_from_games
+from utils.langfuse_utils import init_tracing
 
 
 
 # ---------- Load environment variables ----------
 load_dotenv()
+
+# ---------- Initialize Langfuse Tracing ----------
+LANGFUSE_ENABLED = init_tracing()
 # ---------- Database Functions ----------
 def create_usertable():
     conn = sqlite3.connect('users.db', check_same_thread=False)
