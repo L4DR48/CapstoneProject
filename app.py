@@ -7,11 +7,11 @@ import os
 from dotenv import load_dotenv
 from google import genai
 import pandas as pd
-from tools.boxscore2_0 import BoxScoreMaker
-from tools.boxscore_analysis import BoxScoreAnalysis 
+from services.boxscore2_0 import BoxScoreMaker
+from services.boxscore_analysis import BoxScoreAnalysis 
 from utils.mongo_utils import store_boxscore
 from tools.mongo_tools import get_team_boxscores,extract_players_from_games
-from tools.practice import PracticeGen
+from services.practice import PracticeGen
 from utils.langfuse_utils import init_tracing
 
 # ---------- Load environment variables ----------
