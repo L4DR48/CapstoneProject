@@ -14,8 +14,6 @@ from tools.mongo_tools import get_team_boxscores,extract_players_from_games
 from tools.practice import PracticeGen
 from utils.langfuse_utils import init_tracing
 
-
-
 # ---------- Load environment variables ----------
 load_dotenv()
 
