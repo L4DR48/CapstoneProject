@@ -2,18 +2,18 @@
 
 Decription:
 
-StatYourSquad is an AI powered tool that analyses basketball related data to help coaches make better decisions and player get better results.
+StatYourSquad is an AI-powered tool that analyzes basketball-related data to help coaches make better decisions and players improve their performance.
 
 Features:
 
 Interactive chatbot
-- Receives and answers basketball related questions of the user in a conversational way.
+- Answers basketball-related questions in a conversational, natural-language format.
 
 Document extractor
-- Extracts information from image documents like pdfs and stores it for future use in queries.
+- Extracts and processes information from image-based documents (such as PDFs) and stores the data for future queries
 
 Team and player analysis
-- Analyses both user text prompts and documents data to generate data driven advice for both coaches and players.
+- Analyzes user text prompts and uploaded documents to generate data-driven insights and actionable advice for both coaches and players.
 
 Team Information:
 
