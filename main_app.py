@@ -188,7 +188,7 @@ else:
     st.sidebar.write(f"Welcome, **{st.session_state.user}**")
     
     if st.sidebar.button("Statistics"): 
-        st.session_state.page, st.session_state.show_results = "Statstics", False
+        st.session_state.page, st.session_state.show_results = "Statistics", False
         st.rerun()
     if st.sidebar.button("Comparison"): 
         st.session_state.page, st.session_state.show_results = "Comparison", False
@@ -211,7 +211,7 @@ else:
     if "messages" not in st.session_state: st.session_state.messages = []
 
     # --- PAGES ---
-    if st.session_state.page == "Statstics":
+    if st.session_state.page == "Statistics":
         show_header(hide_bg=st.session_state.show_results)
         st.markdown("<h1 style='color: orange;'>STATYOURSQUAD</h1>", unsafe_allow_html=True)
         with st.form("stats_form"):
@@ -308,6 +308,15 @@ else:
                     except Exception as e:
                         st.error(f"Failed to analyze boxscore: {e}")
             
+            if st.button("Suggest practice drills"):
+                with st.spinner("Generating drills..."):
+                    try:
+                        practice_text = st.session_state.boxscore_analysis.practice_planner()                     
+                        st.text_area("Practice Drills", analysis_text, height=300)
+                    except Exception as e:
+                        st.error(f"Failed to generate practice: {e}")
+
+            
             st.rerun()
 
 #        if user_input := st.chat_input("Ask your question here..."):
@@ -324,8 +333,13 @@ else:
         show_header(hide_bg=st.session_state.show_results)
 #        mat = st.text_input("Equipment (What do you have?)")
 #        num = st.text_input("Amount")
-        st.number_input("Equipment", key="mat")
-        st.number_input("Ammount", key="num")
+        n_equip = st.number_input("Equipment Number Specifications",min_value=0,step=1,format="%d")
+        if "equip_dict" not in st.session_state:
+            st.session_state.equip_dict = {}
+        for i in range(int(n_equip)):
+            mat = st.number_input(f"Equipment {i+1}",key=f"mat{i}",step=1,format="%d")
+            num = st.number_input(f"Amount {i+1}",key=f"num{i}",step=1,format="%d")
+            st.session_state.equip_dict[mat] = num
         if st.button("Start 🏀") and st.session_state.mat and st.session_state.num:
             st.session_state.show_results = True
             st.rerun()
