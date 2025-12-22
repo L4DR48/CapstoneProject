@@ -12,6 +12,6 @@ dependencies=[
     "pandas>=2.3.2",
     "python-dotenv>=1.1.1",
     "reportlab>=4.4.4",
-    "streamlit>=1.49.1"
+    "streamlit>=1.49.1",
     "pymongo>=4.6.0"
 ]

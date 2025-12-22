@@ -240,7 +240,6 @@ class BoxScoreMaker:
         return clean_json(response.text)
     
 
-
     def boxscore(self, path:str, team:str, outfile_path:str):
         box = self.get_stats(path)
 
@@ -249,3 +248,90 @@ class BoxScoreMaker:
         with open(outfile_path, "w") as outfile:    
             json.dump(output, outfile)
             
+
+    def get_stats_from_upload(self, file_bytes: bytes, mime_type: str):
+        """
+        Send image/pdf uploaded via Streamlit directly to Gemini.
+        Returns raw JSON text.
+        """
+
+        ex_json = {
+            #"Team_Name": "ex_team",
+            #"Home_Game": False,
+            "Scores": [
+                {"Total": [{"Home": 20}, {"Away": 30}]},
+                {"1Q": [{"Home": 5}, {"Away": 7}]},
+                {"2Q": [{"Home": 2}, {"Away": 8}]},
+                {"3Q": [{"Home": 4}, {"Away": 10}]},
+                {"4Q": [{"Home": 9}, {"Away": 5}]}
+            ],
+            "Players": [
+                {
+                    "Number": 1,
+                    "Player": "Daniel Vieira",
+                    "MIN": "17:16",
+                    "FGM": 1,
+                    "FGA": 4,
+                    "FG%": 25.0,
+                    "3PM": 0,
+                    "3PA": 0,
+                    "3P%": 0.0,
+                    "FTM": 3,
+                    "FTA": 9,
+                    "FT%": 33.3,
+                    "PTS": 5,
+                    "AST": 0,
+                    "REB": 0,
+                    "OREB": 0,
+                    "STL": 0,
+                    "BLK": 0,
+                    "TO": 2,
+                    "PF": 2,
+                    "+-": -29
+                }
+            ]
+        }
+
+        prompt = f"""
+Extract a basketball boxscore for a team from this image or PDF.
+
+Use basketball knowledge.
+Percentages must be floats.
+
+Example output:
+{json.dumps(ex_json)}
+
+Return ONLY valid JSON.
+No explanations.
+No markdown.
+Use double quotes only.
+If data is missing, use null.
+"""
+
+        response = self.client.models.generate_content(
+            model=self.model,
+            contents=[
+                prompt,
+                types.Part.from_bytes(
+                    data=file_bytes,
+                    mime_type=mime_type
+                )
+            ]
+        )
+
+        if not response.text:
+            raise ValueError("Gemini returned empty response")
+
+        return clean_json(response.text)
+
+    def boxscore_from_upload(self, uploaded_file, team: str):
+        """
+        Streamlit-friendly wrapper
+        """
+        raw_json = self.get_stats_from_upload(
+            uploaded_file.read(),
+            uploaded_file.type or "application/octet-stream"
+        )
+
+        parsed = json.loads(raw_json)
+        return {team: parsed}

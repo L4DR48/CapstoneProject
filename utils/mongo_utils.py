@@ -1,5 +1,7 @@
 from pymongo import MongoClient
+from pymongo.server_api import ServerApi
 from dotenv import load_dotenv
+import pandas as pd
 import os
 
 # Singleton client
@@ -24,7 +26,7 @@ def init_mongo():
         raise ValueError("Please set MONGO_URI, MONGO_DB, and MONGO_COLLECTION in your .env file")
 
     if _client is None:
-        _client = MongoClient(MONGO_URI)
+        _client = MongoClient(MONGO_URI, server_api=ServerApi('1'))
 
     if _collection is None:
         db = _client[MONGO_DB]
@@ -33,6 +35,22 @@ def init_mongo():
     return _collection
 
 
+def store_boxscore(boxscore: dict, team_name: str, opponent):
+    """
+    Store a boxscore in MongoDB using the init_mongo() collection.
+    Returns the inserted document ID.
+    """
+    collection = init_mongo()
+
+    doc = {
+        "team_name": team_name,
+        "opponent": opponent, 
+        "timestamp": pd.Timestamp.now(),  # optional
+        "boxscore": boxscore
+    }
+
+    result = collection.insert_one(doc)
+    return result.inserted_id
 
 
 
