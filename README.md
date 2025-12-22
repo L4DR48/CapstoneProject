@@ -1,10 +1,10 @@
 # CapstoneProject
 
-Decription
+Decription:
 
 StatYourSquad is an AI powered tool that analyses basketball related data to help coaches make better decisions and player get better results.
 
-Features
+Features:
 
 Interactive chatbot
 - Receives and answers basketball related questions of the user in a conversational way.
@@ -15,7 +15,8 @@ Document extractor
 Team and player analysis
 - Analyses both user text prompts and documents data to generate data driven advice for both coaches and players.
 
-Team Information
+Team Information:
+
 - João Patrício, 20231645, 20231645@novaims.unl.pt  
 - Rodrigo Silva, 20231602, 20231602 @novaims.unl.pt 
 - Srijan Dahal, 20230012, 20230012@novaims.unl.pt 
