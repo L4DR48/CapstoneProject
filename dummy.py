@@ -11,9 +11,8 @@ from tools.boxscore2_0 import BoxScoreMaker
 from tools.boxscore_analysis import BoxScoreAnalysis 
 from utils.mongo_utils import store_boxscore
 from tools.mongo_tools import get_team_boxscores,extract_players_from_games
+from tools.practice import PracticeGen
 from utils.langfuse_utils import init_tracing
-
-
 
 # ---------- Load environment variables ----------
 load_dotenv()
@@ -46,7 +45,7 @@ def login_user(username, password):
     return data
 
 
-MODEL = "gemini-1.5-flash-lite"
+MODEL = "gemini-2.5-flash-lite"
 BASE_DIR = Path(__file__).resolve().parent
 IMAGES_DIR = BASE_DIR / "images"
 
@@ -66,6 +65,8 @@ if "boxscore_maker" not in st.session_state:
     st.session_state.boxscore_maker = BoxScoreMaker(st.session_state.gemini_client, MODEL)
 if "boxscore_analysis" not in st.session_state:
     st.session_state.boxscore_analysis = BoxScoreAnalysis(st.session_state.gemini_client, MODEL)
+if "practice_gen" not in st.session_state:
+    st.session_state.practice_gen = PracticeGen(st.session_state.gemini_client, MODEL)
 
 # ---------- Helper Functions ----------
 def img_to_base64(filename: str) -> str:
@@ -439,11 +440,21 @@ else:
 #            st.rerun()
 
             # Save to MongoDB
-        mongodb = st.button("Save to MongoDB")
-        if mongodb:
-            with st.spinner("Storing boxscore in database..."):
-                inserted_id = store_boxscore(st.session_state.boxscore, team, opps)
-                st.success(f"Boxscore stored with ID: {inserted_id}")
+        if "boxscore" in st.session_state:
+            if st.button("Save to MongoDB"):
+                if not team or not opps:
+                    st.warning("Please fill Team and Opponent abbreviations")
+                else:
+                    with st.spinner("Storing boxscore in database..."):
+                        inserted_id = store_boxscore(
+                            st.session_state.boxscore, team, opps
+                        )
+                        st.success(f"Boxscore stored with ID: {inserted_id}")            
+#        mongodb = st.button("Save to MongoDB")
+#        if mongodb:
+#            with st.spinner("Storing boxscore in database..."):
+#                inserted_id = store_boxscore(st.session_state.boxscore, team, opps)
+#                st.success(f"Boxscore stored with ID: {inserted_id}")
 
         if "boxscore" in st.session_state:
             team, players_df, scores_df = boxscore_to_tables(
@@ -480,15 +491,16 @@ else:
                         st.error(f"Failed to analyze boxscore: {e}")
             
             if st.button("Suggest practice drills"):
+                st.session_state.weaknesses = (st.session_state.boxscore_analysis.extract_weaknesses(st.session_state.boxscore))
                 with st.spinner("Generating drills..."):
                     try:
-                        practice_text = st.session_state.boxscore_analysis.practice_planner()                     
-                        st.text_area("Practice Drills", analysis_text, height=300)
+                        practice_text = st.session_state.boxscore_analysis.drills_suggestor(st.session_state.weaknesses)                     
+                        st.text_area("Practice Drills", practice_text, height=300)
                     except Exception as e:
                         st.error(f"Failed to generate practice: {e}")
 
             
-            st.rerun()
+#           st.rerun()
 
 #        if user_input := st.chat_input("Ask your question here..."):
 #            st.session_state.show_results = True
@@ -504,19 +516,26 @@ else:
         show_header(hide_bg=st.session_state.show_results)
 #        mat = st.text_input("Equipment (What do you have?)")
 #        num = st.text_input("Amount")
-        n_equip = st.number_input("Equipment Number Specifications",min_value=0,step=1,format="%d")
+        st.session_state.level = st.selectbox("Team Level",["U10", "U12", "U14", "U16", "U18", "Amateur", "SemiPro", "Pro"])
+        st.session_state.focus = st.selectbox("Training Focus",["Offense", "Defense", "Rebounding", "Passing", "Shooting", "Hustle", "Finishing", "Everything"])
+        st.session_state.practice_time = st.number_input("Practice Duration (minutes)",min_value=30,step=15)
+        st.session_state.practice_venue = st.selectbox("Venue",["Half Court", "Full Court", "Two Courts", "Three Courts"])
+        n_equip = st.number_input("Add Equipment/Personnel",min_value=0,step=1,format="%d")
         if "equip_dict" not in st.session_state:
             st.session_state.equip_dict = {}
         for i in range(int(n_equip)):
-            mat = st.number_input(f"Equipment {i+1}",key=f"mat{i}",step=1,format="%d")
+            mat = st.text_input(f"Equipment/Personnel {i+1}",key=f"mat{i}")
             num = st.number_input(f"Amount {i+1}",key=f"num{i}",step=1,format="%d")
             st.session_state.equip_dict[mat] = num
-        if st.button("Start 🏀") and st.session_state.mat and st.session_state.num:
-            st.session_state.show_results = True
-            st.rerun()
-        if st.session_state.show_results:
-            response = st.session_state.gemini_chat.send_message(f"Practice drills for {st.session_state.num} {st.session_state.mat}")
-            st.write(response.text)
+        if st.button("Generate plan 🏀") and st.session_state.equip_dict:
+            with st.spinner("Generating drills..."):
+                try:
+                    practice_plan = st.session_state.practice_gen.practice_planner(
+                        st.session_state.level, st.session_state.practice_time, st.session_state.focus, st.session_state.practice_venue, st.session_state.equip_dict)                     
+                    st.text_area("Practice Drills", practice_plan, height=300)
+                except Exception as e:
+                    st.error(f"Failed to generate practice: {e}")
+
 
 
     elif st.session_state.page == "Conversations":
