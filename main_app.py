@@ -15,6 +15,7 @@ from utils.mongo_utils import init_mongo, store_boxscore
 # ---------- Load environment variables ----------
 load_dotenv()
 
+
 # ---------- Database Functions ----------
 def create_usertable():
     conn = sqlite3.connect('users.db', check_same_thread=False)
@@ -240,9 +241,9 @@ else:
         show_header(hide_bg=st.session_state.show_results)
         st.markdown("<style>div[data-testid='stPopover'] { position: fixed; bottom: 31px; left: calc(50% - 335px); z-index: 999999; } div[data-testid='stPopover'] button { background: transparent !important; border: none !important; font-size: 20px !important; color: #808080 !important; } [data-testid='stChatInput'] textarea { padding-left: 50px !important; }</style>", unsafe_allow_html=True)
         
-        with st.popover("ADD FILES➕"):
-            st.file_uploader("Images", type=["png", "jpg", "jpeg"], key="c_img")
-            st.file_uploader("Documents", type=["pdf"], key="c_doc")
+#        with st.popover("ADD FILES➕"):
+#            st.file_uploader("Images", type=["png", "jpg", "jpeg"], key="c_img")
+#            st.file_uploader("Documents", type=["pdf"], key="c_doc")
 
         uploaded = st.file_uploader(
             "Upload boxscore",
