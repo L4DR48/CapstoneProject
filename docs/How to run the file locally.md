@@ -2,6 +2,10 @@ Clear Documentaion on how to run the Application Locally
 
 To get the environment and libraries: 
 
+website: 
+
+ statyoursquad.streamlit.app
+
 Open Terminal 
 
 Write: 
@@ -15,6 +19,8 @@ Write:
  
 
 Create a .env file that includes Google Api Key , Langfuse Secret Key, Langfuse Public key, Langfuse host/base url, Mongo URI, Mongo database name and Mongo Collection name. 
+
+
 
  
 
