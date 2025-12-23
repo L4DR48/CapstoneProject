@@ -89,6 +89,8 @@ Individual Players
 ## Deployment 
 Streamlit Community Cloud
 
+URL : statyoursquad.streamlit.app
+
 
 ## Structure
 project-root/
